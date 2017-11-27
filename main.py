@@ -16,6 +16,13 @@ def read_and_tokenize(filename):
         clean_tokens.append(token.replace("\\", "").replace("\'", "'"))
     return clean_tokens
 
+def read_model_file(filename):
+    model = []
+    with codecs.open(filename, 'r', 'utf-8') as text_file:
+        model = str(text_file.read()).split('\n')
+    return model 
+ 
+
 def write_model_to_file(filename, model):    
     with codecs.open(filename, 'w', 'utf-8' ) as f:
         for row in model: f.write(row + '\n')
@@ -26,16 +33,21 @@ def main():
     parser = argparse.ArgumentParser(description='Input')
     
     parser.add_argument('--create_bigram', '-b', type=str,  required=False, help='create bigram model')
-    parser.add_argument('--training_file', '-t', type=str,  required=True, help='Training file (mandatory)')
-    parser.add_argument('--store_model_file', '-s', type=str,  required=False, help='Where to store the model (mandatory)')
+    parser.add_argument('--training_file', '-t', type=str,  required=False, help='Training file')
+    parser.add_argument('--write_model_file', '-s', type=str,  required=False, help='Where to store the model')
+
+    parser.add_argument('--read_model_file', '-r', type=str,  required=False, help='Read model from file')
     args = parser.parse_args()
 
-    tokens = read_and_tokenize(args.training_file)
-    bigram = Bigram(tokens) 
-    bigram_model = bigram.probabilities()
-
-    if(args.store_model_file):
-        write_model_to_file(args.store_model_file, bigram_model)
+    if(args.read_model_file):
+        bigram = Bigram()
+        model = read_model_file(args.read_model_file)
+        bigram.read_bigram_model(model)
+    elif(args.write_model_file):
+        tokens = read_and_tokenize(args.training_file)
+        bigram = Bigram(tokens) 
+        bigram_model = bigram.generate_model()
+        write_model_to_file(args.write_model_file, bigram_model)
     else:
         for i in bigram_model: print(i)
 
