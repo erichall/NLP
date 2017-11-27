@@ -1,4 +1,5 @@
 from __future__ import division
+from sys import exit
 import nltk
 import operator
 import math
@@ -6,44 +7,62 @@ import argparse
 from random import randint, uniform
 from collections import defaultdict
 
-class Bigram:
-    def __init__(self, tokens = None):
+class Ngram:
+    def __init__(self, ngram, tokens = None):
         if tokens:
             self.tokens = tokens
-            self.total_words = len(tokens)
-            self.unigram_count = defaultdict(int)
-            self.uniq_words = set()
-            self.bigrams = nltk.ngrams(tokens,2)
+            self.ngram = ngram 
+            if ngram >= 1:
+                self.unigrams = nltk.ngrams(tokens,1)
+            if ngram >= 2:
+                self.bigrams = nltk.ngrams(tokens,2)
+                self.unigram_count = defaultdict(int)
+            if ngram >= 3:
+                self.trigram = nltk.ngrams(tokens,3)    
+                self.bigram_count = defaultdict(int)
+            if ngram >= 4:
+                self.quadragram = nltk.ngrams(tokens,4)    
+                self.trigram_count = defaultdict(int)
         else:
-            self.bigram_dict = defaultdict(lambda: defaultdict(int))
+            if ngram >= 1:
+                self.unigram_dict = defaultdict(lambda: defaultdict(int))
+            if ngram >= 2:
+                self.bigram_dict = defaultdict(lambda: defaultdict(int))
+            if ngram >= 3:
+                self.trigram_dict = defaultdict(lambda: defaultdict(int))
+            if ngram >= 4:
+                self.quadragram_dict = defaultdict(lambda: defaultdict(int))
+
             self.words = [] 
             self.sentence = []
             self.sentence_length = 20
 
-    def generate_model(self):
-        total_tokens = len(self.tokens)
-        
-        bigram_count = defaultdict(int)
+    def generate_model(self): 
+        if(self.ngram == 1):
+            return self.generate_unigram()
+        elif(self.ngram == 2):
+            return self.generate_bigram()
+        # elif(ngram == 3):
 
+    def generate_unigram(self):
+        rows_to_print = []
+        for token in self.unigrams:
+            print(token)
+            exit(0)
+
+    def generate_bigram(self): 
+        rows_to_print = []
         for token in self.tokens:
-            self.uniq_words.add(token)
             self.unigram_count[token.strip()] += 1
 
         for bigram in self.bigrams:
-            bigram_count[bigram] += 1
+            self.bigram_count[bigram] += 1
         
-        rows_to_print = []
-        
-        # rows_to_print.append(str(len(self.uniq_words)) + " " + str(self.total_words))
-        
-        # for index, unigram in enumerate(self.unigram_count):
-            # rows_to_print.append(str(index) + " " + str(unigram) + " " + str(self.unigram_count[unigram]))
-        # print(rows_to_print)
-        for bigram in bigram_count:
+        for bigram in self.bigram_count:
             tmp = ""
             for entry in bigram:
                 tmp += entry + " "
-            log_prob = "{0:.15f}".format(math.log(bigram_count[bigram] / self.unigram_count[bigram[0]]))
+            log_prob = "{0:.15f}".format(math.log(self.bigram_count[bigram] / self.unigram_count[bigram[0]]))
 
             rows_to_print.append(tmp.strip()  + " " + str(log_prob))
         
@@ -63,7 +82,6 @@ class Bigram:
             return
  
         if(iterations == 0):
-            print(len(self.bigram_dict.keys()))
             first_token = self.words[randint(0, len(self.bigram_dict.keys()))]
             self.sentence.append(first_token)
             return self.generate_sentence(first_token, 1)

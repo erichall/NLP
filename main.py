@@ -2,7 +2,7 @@ from api import Api
 import nltk
 import codecs
 import argparse
-from bigram_model import Bigram
+from bigram_model import Ngram
 #nltk.download('punkt')
 
 def read_and_tokenize(filename):
@@ -40,16 +40,16 @@ def main():
     args = parser.parse_args()
 
     if(args.read_model_file):
-        bigram = Bigram()
+        ngram = Ngram(1)
         model = read_model_file(args.read_model_file)
-        bigram.read_bigram_model(model)
+        ngram.read_bigram_model(model)
     elif(args.write_model_file):
         tokens = read_and_tokenize(args.training_file)
-        bigram = Bigram(tokens) 
-        bigram_model = bigram.generate_model()
-        write_model_to_file(args.write_model_file, bigram_model)
+        ngram = Ngram(1,tokens) 
+        ngram_model = ngram.generate_model()
+        write_model_to_file(args.write_model_file, ngram_model)
     else:
-        for i in bigram_model: print(i)
+        for i in ngram_model: print(i)
 
 if __name__ == '__main__':
     main()
