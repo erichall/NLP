@@ -13,7 +13,7 @@ class Api(object):
         self.url_search = '/wiki/Special:Search?'
 
         print("new API object created")
-        print(self.get_all_lyrics_from_artis("Adam Tensta"))
+        print(self.get_all_lyrics_from_artis("2pac"))
 
     # find the top most result and fetches that artists songs
     def get_all_tracks_by_artist(self, artist):
