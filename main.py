@@ -40,13 +40,14 @@ def main():
     args = parser.parse_args()
 
     if(args.read_model_file):
-        ngram = Ngram(1)
+        ngram = Ngram(2)
         model = read_model_file(args.read_model_file)
         ngram.read_bigram_model(model)
     elif(args.write_model_file):
         tokens = read_and_tokenize(args.training_file)
-        ngram = Ngram(1,tokens) 
+        ngram = Ngram(2,tokens) 
         ngram_model = ngram.generate_model()
+        print(ngram_model)
         write_model_to_file(args.write_model_file, ngram_model)
     else:
         for i in ngram_model: print(i)
