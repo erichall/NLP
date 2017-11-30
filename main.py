@@ -2,7 +2,10 @@ from api import Api
 import nltk
 import codecs
 import argparse
-from bigram_model import Ngram
+from bigram_model import Bigram
+from unigram_model import Unigram
+from lstm_generator import Lstm
+
 #nltk.download('punkt')
 
 def read_and_tokenize(filename):
@@ -15,6 +18,10 @@ def read_and_tokenize(filename):
     for token in tokens:
         clean_tokens.append(token.replace("\\", "").replace("\'", "'"))
     return clean_tokens
+
+def read_file(filename):
+    with codecs.open(filename, 'r', 'utf-8') as text_file:
+        return str(text_file.read())
 
 def read_model_file(filename):
     model = []
@@ -31,26 +38,49 @@ def main():
     # api = Api()
 
     parser = argparse.ArgumentParser(description='Input')
-    
-    parser.add_argument('--create_bigram', '-b', type=str,  required=False, help='create bigram model')
+   
+    # training file is needed for all inputs except when reading a premade model
     parser.add_argument('--training_file', '-t', type=str,  required=False, help='Training file')
+
+
+    parser.add_argument('--unigram', '-uni', action='store_true',  required=False, help='create unigram model')
+    parser.add_argument('--bigram', '-big', action='store_true',  required=False, help='create bigram model')
+
+    parser.add_argument('--lstm', '-lstm', action='store_true',  required=False, help='RNN generator')
+
     parser.add_argument('--write_model_file', '-s', type=str,  required=False, help='Where to store the model')
 
     parser.add_argument('--read_model_file', '-r', type=str,  required=False, help='Read model from file')
     args = parser.parse_args()
-
-    if(args.read_model_file):
-        ngram = Ngram(2)
-        model = read_model_file(args.read_model_file)
-        ngram.read_bigram_model(model)
-    elif(args.write_model_file):
+    
+    tokens = []
+    if(args.training_file):
         tokens = read_and_tokenize(args.training_file)
-        ngram = Ngram(2,tokens) 
-        ngram_model = ngram.generate_model()
-        print(ngram_model)
-        write_model_to_file(args.write_model_file, ngram_model)
-    else:
-        for i in ngram_model: print(i)
+
+    if args.unigram:
+        unigram = Unigram(tokens)
+        unigram_model = unigram.generate_model()
+        write_model_to_file(args.write_model_file, unigram_model)
+        unigram.read_unigram_model(unigram_model)
+    elif args.bigram:
+        bigram = Bigram(tokens)
+        bigram_model = bigram.generate_model()
+        write_model_to_file(args.write_model_file, bigram_model)
+        bigram.read_bigram_model(bigram_model)
+    elif args.lstm:
+        lstm = Lstm(read_file(args.training_file))
+
+    # if(args.read_model_file):
+    #     ngram = Ngram(2)
+    #     model = read_model_file(args.read_model_file)
+    #     ngram.read_bigram_model(model)
+    # elif(args.write_model_file):
+    #     ngram = Ngram(2,tokens) 
+    #     ngram_model = ngram.generate_model()
+    #     print(ngram_model)
+    #     write_model_to_file(args.write_model_file, ngram_model)
+    # else:
+    #     for i in ngram_model: print(i)
 
 if __name__ == '__main__':
     main()
