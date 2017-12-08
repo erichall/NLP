@@ -37,7 +37,8 @@ def write_model_to_file(filename, model):
         for row in model: f.write(row + '\n')
 
 def main():
-    # api = Api()
+    api = Api()
+    exit(0)
 
     parser = argparse.ArgumentParser(description='Input')
    

@@ -1,3 +1,5 @@
+# source https://keras.io/
+# credits : https://github.com/fchollet/keras/blob/master/examples/lstm_text_generation.py
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Activation
@@ -50,6 +52,7 @@ class Lstm:
         optimizer = RMSprop(lr=0.01)
         model.compile(loss='categorical_crossentropy', optimizer=optimizer)
         
+        f = open('rhymes_eminem','w')
         for iteration in range(1, 60):
             print()
             print('-' * 50)
@@ -64,6 +67,7 @@ class Lstm:
                 generated += sentence
                 print('----- Generating with seed: "' + sentence + '"')
                 print(generated)
+            generated = ""
             for i in range(400):
                 x_pred = np.zeros((1, maxlen, len(chars)))
                 for t, char in enumerate(sentence):
@@ -76,4 +80,6 @@ class Lstm:
                 generated += next_char
                 sentence = sentence[1:] + next_char
 
-                print(generated)
+            print(generated)
+            f.write("Iteration ", iteration)
+            f.write(generated)
