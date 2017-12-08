@@ -14,11 +14,11 @@ class Quadragram:
             self.total_words = len(tokens)
             self.trigrams = nltk.ngrams(tokens,3)
             self.quadragrams = nltk.ngrams(tokens,4)
-        else:
-            self.quadragram_dict = defaultdict(lambda: defaultdict(int))
-            self.words = []
-            self.sentence = []
-            self.sentence_length = 20
+       
+        self.quadragram_dict = defaultdict(lambda: defaultdict(int))
+        self.words = []
+        self.sentence = []
+        self.sentence_length = 20
 
     def generate_model(self):
         total_tokens = len(self.tokens)

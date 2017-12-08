@@ -4,6 +4,8 @@ import codecs
 import argparse
 from bigram_model import Bigram
 from unigram_model import Unigram
+from trigram_model import Trigram
+from quadragram_model import Quadragram
 from lstm_generator import Lstm
 
 #nltk.download('punkt')
@@ -46,6 +48,10 @@ def main():
     parser.add_argument('--unigram', '-uni', action='store_true',  required=False, help='create unigram model')
     parser.add_argument('--bigram', '-big', action='store_true',  required=False, help='create bigram model')
 
+    parser.add_argument('--trigram', '-tri', action='store_true',  required=False, help='create bigram model')
+
+    parser.add_argument('--quadragram', '-quad', action='store_true',  required=False, help='create bigram model')
+
     parser.add_argument('--lstm', '-lstm', action='store_true',  required=False, help='RNN generator')
 
     parser.add_argument('--write_model_file', '-s', type=str,  required=False, help='Where to store the model')
@@ -67,6 +73,19 @@ def main():
         bigram_model = bigram.generate_model()
         write_model_to_file(args.write_model_file, bigram_model)
         bigram.read_bigram_model(bigram_model)
+    elif args.trigram:
+        trigram = Trigram(tokens)
+        trigram_model = trigram.generate_model()
+        write_model_to_file(args.write_model_file, trigram_model)
+        trigram.read_trigram_model(trigram_model)
+    elif args.quadragram:
+        quadragram = Quadragram(tokens)
+        quadragram_model = quadragram.generate_model()
+        write_model_to_file(args.write_model_file, quadragram_model)
+        quadragram.read_quadragram_model(quadragram_model)
+    
+
+
     elif args.lstm:
         lstm = Lstm(read_file(args.training_file))
 

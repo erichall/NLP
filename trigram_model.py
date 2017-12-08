@@ -15,11 +15,11 @@ class Trigram:
             self.bigrams = nltk.ngrams(tokens,2)
             #self.uniq_words = set()
             self.trigrams = nltk.ngrams(tokens,3)
-        else:
-            self.trigram_dict = defaultdict(lambda: defaultdict(int))
-            self.words = []
-            self.sentence = []
-            self.sentence_length = 20
+        
+        self.trigram_dict = defaultdict(lambda: defaultdict(int))
+        self.words = []
+        self.sentence = []
+        self.sentence_length = 20
 
     def generate_model(self):
         total_tokens = len(self.tokens)
