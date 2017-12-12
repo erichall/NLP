@@ -1,4 +1,6 @@
-from api import Api
+# -*- coding: utf-8 -*-
+# coding: utf-8
+#from api import Api
 import nltk
 import codecs
 import argparse
@@ -22,7 +24,7 @@ def read_and_tokenize(filename):
     return clean_tokens
 
 def read_file(filename):
-    with codecs.open(filename, 'r', 'utf-8') as text_file:
+    with codecs.open(filename, 'r', encoding='utf-8') as text_file:
         return str(text_file.read())
 
 def read_model_file(filename):
@@ -37,8 +39,8 @@ def write_model_to_file(filename, model):
         for row in model: f.write(row + '\n')
 
 def main():
-    api = Api()
-    exit(0)
+    #api = Api()
+    #exit(0)
 
     parser = argparse.ArgumentParser(description='Input')
    
@@ -57,6 +59,7 @@ def main():
 
     parser.add_argument('--write_model_file', '-s', type=str,  required=False, help='Where to store the model')
 
+    parser.add_argument('--ephocs', '-e', type=str,  required=False, help='number of ephocs')
     parser.add_argument('--read_model_file', '-r', type=str,  required=False, help='Read model from file')
     args = parser.parse_args()
     
@@ -84,11 +87,8 @@ def main():
         quadragram_model = quadragram.generate_model()
         write_model_to_file(args.write_model_file, quadragram_model)
         quadragram.read_quadragram_model(quadragram_model)
-    
-
-
     elif args.lstm:
-        lstm = Lstm(read_file(args.training_file))
+        lstm = Lstm(read_file(args.training_file), args.write_model_file, args.ephocs)
 
     # if(args.read_model_file):
     #     ngram = Ngram(2)

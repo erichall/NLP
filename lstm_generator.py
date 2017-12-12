@@ -1,15 +1,33 @@
 # source https://keras.io/
 # credits : https://github.com/fchollet/keras/blob/master/examples/lstm_text_generation.py
+from keras.callbacks import ModelCheckpoint
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Activation
 from keras.layers import LSTM
+import keras
 import random
 from keras.optimizers import RMSprop
 
+class History(keras.callbacks.Callback):
+    def __init__(self, filename):
+        self.filename = filename
+   
+    def on_epoch_end(self, epoch, logs={}):
+        print(epoch)
+        print(logs)
+        print(self.filename)
+
+        f = open(self.filename,'a+')
+        f.write("Epoch: " + str(epoch) + " ")
+        f.write(str(logs))
+        f.close()	
+
 class Lstm:
-    def __init__(self, text):
+    def __init__(self, text, filename=None, ephocs=0):
         self.text = text
+        self.filename = filename
+        self.ephocs = ephocs
         self.divide_text()
 
     def sample(self,preds, temperature=1.0):
@@ -48,38 +66,45 @@ class Lstm:
         model.add(Dense(len(chars)))
         model.add(Activation('softmax'))
         
-
+       
         optimizer = RMSprop(lr=0.01)
         model.compile(loss='categorical_crossentropy', optimizer=optimizer)
         
-        f = open('rhymes_eminem','w')
-        for iteration in range(1, 60):
-            print()
-            print('-' * 50)
-            print('Iteration', iteration)
-            model.fit(x, y, batch_size=128, epochs=1)
 
-            start_index = random.randint(0, len(self.text) - maxlen - 1)
+        #for iteration in range(1, 60):
+        #    print()
+        #    print('-' * 50)
+        #    print('Iteration', iteration)
+        #    model.fit(x, y, batch_size=128, epochs=1)
+        # checkpoint
+        #filepath="weights.hdf5"
+        #checkpoint = ModelCheckpoint(filepath, verbose=1)
+        #callbacks_list = [checkpoint]
+        history = History(self.filename)
+        model.fit(x, y, batch_size=128, epochs=int(self.ephocs), callbacks=[history])
 
-            for diversity in [0.2, 0.5, 1.0, 1.2]:
-                generated = ''
-                sentence = self.text[start_index: start_index + maxlen]
-                generated += sentence
-                print('----- Generating with seed: "' + sentence + '"')
-                print(generated)
-            generated = ""
-            for i in range(400):
-                x_pred = np.zeros((1, maxlen, len(chars)))
-                for t, char in enumerate(sentence):
-                    x_pred[0, t, char_indices[char]] = 1.
+        f = open(self.filename,'a+')
+        start_index = random.randint(0, len(self.text) - maxlen - 1)
 
-                preds = model.predict(x_pred, verbose=0)[0]
-                next_index = self.sample(preds, diversity)
-                next_char = indices_char[next_index]
-
-                generated += next_char
-                sentence = sentence[1:] + next_char
-
+        generated = ''
+        for diversity in [0.2, 0.5, 1.0, 1.2]:
+            generated = ''
+            sentence = self.text[start_index: start_index + maxlen]
+            generated += sentence
+            print('----- Generating with seed: "' + sentence + '"')
             print(generated)
-            f.write("Iteration ", iteration)
-            f.write(generated)
+        for i in range(400):
+            x_pred = np.zeros((1, maxlen, len(chars)))
+            for t, char in enumerate(sentence):
+                x_pred[0, t, char_indices[char]] = 1.
+
+            preds = model.predict(x_pred, verbose=0)[0]
+            next_index = self.sample(preds, diversity)
+            next_char = indices_char[next_index]
+
+            generated += next_char
+            sentence = sentence[1:] + next_char
+
+        print(generated)
+        f.write(generated + "\n\n")
+        f.close()	

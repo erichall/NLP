@@ -13,7 +13,11 @@ class Api(object):
         self.url_search = '/wiki/Special:Search?'
 
         print("new API object created")
-        print(self.get_all_lyrics_from_artis("eminem"))
+        text = self.get_all_lyrics_from_artis("eminem")
+        f = open('data/eminem','w')
+        print(text)
+        f.write(text[0])
+        f.close()
 
     # find the top most result and fetches that artists songs
     def get_all_tracks_by_artist(self, artist):
